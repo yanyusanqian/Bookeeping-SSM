@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3.dtd">
+<mapper namespace="com.dao.BookeepingMapper">
+
+	<!-- <select id="selectUserByPhoneNum" parameterType="String"
+		resultType="user">
+		select * from user where user_phone = #{user_phone}
+	</select> -->
+	
+	<select id="selectUserIdByPhoneNum" parameterType="String"
+		resultType="int">
+		select user_id from user where user_phone =
+		#{user_phone}
+	</select>
+	<select id="selectUserImageById" parameterType="String"
+		resultType="String">
+		select user_image from user where user_id =
+		#{user_id}
+	</select>
+
+	<insert id="InsertUser" parameterType="user"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into user
+		(user_phone,user_password,user_nikename)
+		values
+		(#{user_phone},#{user_password},#{user_nikename})
+	</insert>
+	
+	<select id="matchUserByPhoneAndpassword" parameterType="String" resultType="user">
+		select * from user where user_phone =
+		#{user_phone} and
+		user_password = #{user_password}
+	</select>
+	
+	<update id="UpdateNikename" parameterType="String">
+		update user SET user_nikename=#{user_nikename} where user_phone=#{user_phone}
+	</update>
+	
+	<update id="UpdateUserImage" parameterType="String">
+		update user SET user_image=#{user_image} where user_phone=#{user_phone}
+	</update>
+	
+	<insert id="InsertArticle" parameterType="article"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into article
+		(user_id,article_content,article_image,article_time)
+		values
+		(#{user_id},#{article_content},#{article_image},#{article_time})
+	</insert>
+	
+	<select id="matchUserIdByPhone" parameterType="String" resultType="user">
+		select * from user where user_phone = #{user_phone}
+	</select>
+	
+	<select id="getArticleByTime" parameterType="String" resultType="Transferarticle">
+		select a.article_id,a.user_id,u.user_nikename,u.user_image,
+		a.article_content,a.article_image,a.article_time from 
+		article a,user u WHERE a.user_id = u.user_id 
+		ORDER by article_time desc
+	</select>
+	
+	<insert id="InsertReply" parameterType="reply"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into reply
+		(article_id,reply_user_id,reply_to_user_id,reply_content)
+		values
+		(#{article_id},#{reply_user_id},#{reply_to_user_id},#{reply_content})
+	</insert>
+	
+	<select id="getReplyById"  parameterType="String" resultType="Transferreply">
+	select 
+	r.reply_id,r.article_id,r.reply_user_id,r.reply_to_user_id,r.reply_content,u.user_image,u.user_nikename 
+	from reply r,user u 
+	WHERE r.reply_user_id = u.user_id and r.article_id = #{article_id}
+	</select>
+	
+	<insert id="InsertAccount" parameterType="account"
+		useGeneratedKeys="true" keyProperty="bill_id">
+		insert into account
+		(user_id,bill_count,bill_inexType,bill_detailType,bill_imgRes,bill_time,bill_note)
+		values
+		(#{user_id},#{bill_count},#{bill_inexType},#{bill_detailType},#{bill_imgRes},#{bill_time},#{bill_note})
+	</insert>
+	
+	<select id="getAccountByUserPhone" parameterType="String" resultType="account">
+		select * from account ORDER by bill_time desc
+	</select>
+	
+	<insert id="InsertAccountList" parameterType="java.util.List">
+        insert into account
+        (user_id,bill_count,bill_inexType,bill_detailType,bill_imgRes,bill_time,bill_note) 
+        values
+        <foreach collection="list" index="index" item="account" separator="," close=";">
+            (#{account.user_id},#{account.bill_count},#{account.bill_inexType},#{account.bill_detailType},#{account.bill_imgRes},#{account.bill_time},#{account.bill_note})
+        </foreach>
+    </insert>
+    
+    <delete id="deleteAccountByid" parameterType="int">
+		delete from account where
+		bill_id=#{bill_id} and user_id=#{user_id}
+	</delete>
+</mapper>
